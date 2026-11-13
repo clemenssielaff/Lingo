@@ -54,8 +54,9 @@ args=(
   -v lingo-jetbrains-cache:/home/ubuntu/.cache/JetBrains
   --userns=keep-id
   --group-add keep-groups
-  "$IMAGE"
 )
+# WICHTIG: Alle Optionen müssen VOR dem Image-Namen stehen – alles danach wäre
+# das Container-Kommando.
 
 if [ "${LINGO_USB_PASSTHROUGH:-0}" = "1" ]; then
   args+=(--device /dev/bus/usb)
@@ -80,4 +81,4 @@ if [ -n "${LINGO_MEMORY:-}" ]; then
   args+=(--memory "$LINGO_MEMORY")
 fi
 
-exec podman run "${args[@]}" "${LINGO_CMD:-bash}"
+exec podman run "${args[@]}" "$IMAGE" "${LINGO_CMD:-bash}"
