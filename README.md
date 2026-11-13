@@ -104,14 +104,19 @@ Die KVM-Meldung von Android Studio betrifft den **Emulator** (x86_64-AVDs brauch
 `/dev/kvm`). Für das echte Galaxy Tab brauchst du das nicht – aber so richtest du
 es ein, wenn du doch mal einen Emulator im Container starten willst:
 
-Host (CachyOS), einmalig:
+Host (CachyOS), nur nötig wenn du den Emulator im Container nutzen willst:
 
 ```bash
-sudo pacman -S qemu-full
-sudo modprobe kvm-intel        # Intel-CPU; bei AMD: kvm-amd
+sudo modprobe kvm-intel        # Intel-CPU; bei AMD: kvm-amd (Modul liegt im Kernel-Paket)
+getent group kvm || sudo groupadd -r kvm
 sudo usermod -aG kvm $USER     # danach neu einloggen
-ls -l /dev/kvm                 # muss existieren und Gruppe kvm zeigen
+ls -l /dev/kvm                 # muss existieren
 ```
+
+`qemu-full` (~1,5 GB) brauchst du dafür **nicht** auf dem Host: Das QEMU des
+Android-Emulators liegt im SDK-Paket `emulator` *im Container*. `qemu-full` auf
+dem Host wäre nur nötig, um einen Emulator direkt auf dem Host zu betreiben –
+für den Dev-Container + echtes Tablet entfällt das komplett.
 
 Image mit Emulator-Paketen bauen (größeres Image):
 
