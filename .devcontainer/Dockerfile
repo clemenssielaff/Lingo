@@ -23,10 +23,12 @@ ARG WITH_EMULATOR=0
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl wget unzip git openssh-client \
       openjdk-17-jdk \
+      fontconfig fonts-dejavu-core fonts-noto-core \
       libx11-6 libxext6 libxrender1 libxtst6 libxi6 libxrandr2 libxinerama1 \
       libxcursor1 libxfixes3 libxkbcommon0 libgl1 libegl1 libgles2 \
       libfontconfig1 libfreetype6 libglib2.0-0 libnss3 libnspr4 \
       libdrm2 libgbm1 libasound2t64 \
+    && fc-cache -f \
     && rm -rf /var/lib/apt/lists/*
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64

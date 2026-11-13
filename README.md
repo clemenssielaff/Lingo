@@ -76,6 +76,26 @@ drei Varianten, von empfohlen nach „geht auch":
    reicht `/dev/bus/usb` in den Container durch (Host braucht `android-udev` +
    Gruppe `adbusers`). Klappt meist, ist aber hakelig – nimm Variante 1.
 
+### Fehlende/unichtbare Icons und Buttons (XWayland, Wayland, HiDPI)
+
+X11-Forwarding über XWayland funktioniert grundsätzlich sauber – zwei typische
+Ursachen für fehlende Icons/Radio-Buttons im Container:
+
+1. **Keine Schriftarten im Image** – ist gefixt: die Dockerfile installiert jetzt
+   `fontconfig fonts-dejavu-core fonts-noto-core` und baut den Font-Cache (`fc-cache -f`).
+2. **Fractional Scaling auf dem Wayland-Host** – KDE skaliert XWayland-Fenster
+   (z. B. 125 %/150 %), Android Studio skaliert zusätzlich selbst → Elemente
+   verschwinden oder werden unscharf. Lösungen, eine davon genügt:
+   - Beim Login auf CachyOS eine **X11-Session** wählen („Plasma (X11)"), dann
+     ist das Studio-Fenster natives X11 und nicht XWayland, oder
+   - IDE-Skalierung fest auf 1.0 zwingen (im Container, wirkt dank Volume persistent):
+     ```bash
+     d=$(ls -d ~/.config/Google/AndroidStudio* | head -1)
+     echo "ide.ui.scale=1.0" >> "$d/idea.properties"
+     # dann Studio neu starten
+     ```
+   - oder die Skalierung in den KDE-Anzeigeeinstellungen vorübergehend auf 100 % stellen.
+
 ### Emulator mit KVM im Container (optional)
 
 Die KVM-Meldung von Android Studio betrifft den **Emulator** (x86_64-AVDs brauchen
