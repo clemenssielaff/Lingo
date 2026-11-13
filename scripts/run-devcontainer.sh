@@ -73,14 +73,22 @@ if [ "${LINGO_GPU:-0}" = "1" ]; then
   args+=(--device /dev/dri)
 fi
 
-# Gruppen: '--group-add keep-groups' ist nicht mit anderen --group-add kombinierbar.
-# Ohne GPU -> keep-groups (nimmt alle Host-Gruppen mit, z. B. adbusers).
-# Mit GPU -> explizit video/render (Host-User ist das auf Desktop-Systemen eh);
-# bei gleichzeitigem USB-Passthrough zusätzlich adbusers.
+# Gruppen: '--group-add keep-groups' ist nicht mit anderen --group-add kombinierbar,
+# und Namen wie 'render'/'adbusers' existieren im minimalen Container nicht ->
+# GIDs auf dem Host auflösen und numerisch übergeben.
+add_group_gid() {
+  local gid
+  gid=$(getent group "$1" 2>/dev/null | cut -d: -f3 || true)
+  if [ -n "$gid" ]; then
+    args+=(--group-add "$gid")
+  fi
+}
+
 if [ "${LINGO_GPU:-0}" = "1" ]; then
-  args+=(--group-add video --group-add render)
+  add_group_gid video
+  add_group_gid render
   if [ "${LINGO_USB_PASSTHROUGH:-0}" = "1" ]; then
-    args+=(--group-add adbusers)
+    add_group_gid adbusers
   fi
 else
   args+=(--group-add keep-groups)
