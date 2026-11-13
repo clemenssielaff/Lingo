@@ -1,0 +1,70 @@
+# Lingo Dev-Container: Android Studio + Android SDK + JDK auf Ubuntu 24.04.
+# Funktioniert unverändert mit Podman und Docker.
+#
+# Bauen (vom Repo-Root aus):
+#   podman build -t lingo-dev -f .devcontainer/Dockerfile .devcontainer
+#
+# Starten siehe scripts/run-devcontainer.sh bzw. README.md.
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Command-line tools des Android SDK (Version ggf. aktualisieren, siehe
+# https://developer.android.com/studio unter „Command line tools only")
+ARG CMDTOOLS_URL=https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+# Optionaler Build-Arg: exakter Download-Link von https://developer.android.com/studio
+# (Zeile „Linux"). Wenn leer, wird der Link automatisch von der Downloadseite gelesen.
+ARG STUDIO_URL=
+
+# Systempakete: JDK 17, Tools und die X11-/GL-Bibliotheken, die Android Studio
+# für die GUI braucht.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates curl wget unzip git openssh-client \
+      openjdk-17-jdk \
+      libx11-6 libxext6 libxrender1 libxtst6 libxi6 libxrandr2 libxinerama1 \
+      libxcursor1 libxfixes3 libxkbcommon0 libgl1 libegl1 libgles2 \
+      libfontconfig1 libfreetype6 libglib2.0-0 libnss3 libnspr4 \
+      libdrm2 libgbm1 libasound2 \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV ANDROID_HOME=/opt/android-sdk
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+
+# Android SDK: command-line tools + benötigte Pakete (platform-tools enthält adb)
+RUN mkdir -p "$ANDROID_HOME/cmdline-tools" \
+    && curl -fSL "$CMDTOOLS_URL" -o /tmp/cmdtools.zip \
+    && unzip -q /tmp/cmdtools.zip -d "$ANDROID_HOME/cmdline-tools" \
+    && mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest" \
+    && rm /tmp/cmdtools.zip
+
+ENV PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$JAVA_HOME/bin:$PATH"
+
+RUN yes | sdkmanager --licenses >/dev/null \
+    && sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+# Android Studio (tar.gz entpackt nach android-studio/)
+RUN if [ -z "$STUDIO_URL" ]; then \
+      STUDIO_URL=$(curl -fsSL https://developer.android.com/studio \
+        | grep -oE 'https://[a-zA-Z0-9./_?=&%-]+linux\.tar\.gz' | head -n 1); \
+    fi \
+    && test -n "$STUDIO_URL" \
+    && echo "Android Studio Download: $STUDIO_URL" \
+    && curl -fSL "$STUDIO_URL" -o /tmp/studio.tar.gz \
+    && mkdir -p /opt/android-studio \
+    && tar -xzf /tmp/studio.tar.gz -C /opt/android-studio --strip-components=1 \
+    && rm /tmp/studio.tar.gz
+
+ENV PATH="/opt/android-studio/bin:$PATH"
+
+# Eigenen Benutzer statt root (Android Studio motzt sonst herum)
+RUN useradd -m -u 1000 -s /bin/bash dev \
+    && mkdir -p /workspace \
+    && chown -R dev:dev /workspace /opt/android-sdk
+
+USER dev
+ENV HOME=/home/dev
+WORKDIR /workspace
+
+# Im Container: `studio` startet Android Studio, `./gradlew installDebug` baut & installiert.
+CMD ["bash"]
