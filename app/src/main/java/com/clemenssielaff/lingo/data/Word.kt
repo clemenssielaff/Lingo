@@ -9,7 +9,7 @@ data class Word(
     val term: String,
     val translation: String,
     val example: String = "",
-    val language: String = "en",
+    val language: String = "ko",
     val timesCorrect: Int = 0,
     val timesWrong: Int = 0,
 )

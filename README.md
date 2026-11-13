@@ -1,6 +1,6 @@
 # Lingo – Vokabeltrainer für Android
 
-„Lingo" ist eine kleine Sprachlern-App (aktuell: Englisch → Deutsch) für Android.
+„Lingo" ist eine kleine Sprachlern-App (aktuell: Koreanisch → Deutsch) für Android.
 Du verwaltest Vokabeln mit Übersetzung und Beispielsatz und übst sie per
 Karteikarten-Modus („Gewusst" / „Nochmal üben").
 

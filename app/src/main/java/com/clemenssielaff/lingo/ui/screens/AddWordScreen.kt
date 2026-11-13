@@ -32,7 +32,7 @@ fun AddWordScreen(viewModel: LingoViewModel, onNavigateBack: () -> Unit) {
     var term by remember { mutableStateOf("") }
     var translation by remember { mutableStateOf("") }
     var example by remember { mutableStateOf("") }
-    var language by remember { mutableStateOf("en") }
+    var language by remember { mutableStateOf("ko") }
 
     Scaffold(
         topBar = {
@@ -56,7 +56,7 @@ fun AddWordScreen(viewModel: LingoViewModel, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = term,
                 onValueChange = { term = it },
-                label = { Text("Begriff (z. B. Englisch)") },
+                label = { Text("Begriff (z. B. Koreanisch)") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -76,7 +76,7 @@ fun AddWordScreen(viewModel: LingoViewModel, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = language,
                 onValueChange = { language = it },
-                label = { Text("Sprache (Code, z. B. en)") },
+                label = { Text("Sprache (Code, z. B. ko)") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
