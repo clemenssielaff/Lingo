@@ -58,7 +58,6 @@ fun HomeScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onPracticeClick,
-                enabled = words.isNotEmpty(),
             ) {
                 Icon(Icons.Default.PlayArrow, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
