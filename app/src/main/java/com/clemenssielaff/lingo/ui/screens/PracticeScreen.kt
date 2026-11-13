@@ -99,6 +99,7 @@ fun PracticeScreen(viewModel: LingoViewModel, onNavigateBack: () -> Unit) {
             }
 
             else -> {
+                val card = checkNotNull(current)
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -123,15 +124,15 @@ fun PracticeScreen(viewModel: LingoViewModel, onNavigateBack: () -> Unit) {
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = if (flipped) current.translation else current.term,
+                                    text = if (flipped) card.translation else card.term,
                                     fontSize = 28.sp,
                                     fontWeight = FontWeight.Bold,
                                     textAlign = TextAlign.Center,
                                 )
-                                if (flipped && current.example.isNotBlank()) {
+                                if (flipped && card.example.isNotBlank()) {
                                     Spacer(Modifier.height(12.dp))
                                     Text(
-                                        text = current.example,
+                                        text = card.example,
                                         style = MaterialTheme.typography.bodyMedium,
                                         textAlign = TextAlign.Center,
                                     )
@@ -156,7 +157,7 @@ fun PracticeScreen(viewModel: LingoViewModel, onNavigateBack: () -> Unit) {
                         OutlinedButton(
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                viewModel.markWrong(current)
+                                viewModel.markWrong(card)
                                 advance()
                             },
                         ) {
@@ -165,7 +166,7 @@ fun PracticeScreen(viewModel: LingoViewModel, onNavigateBack: () -> Unit) {
                         Button(
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                viewModel.markCorrect(current)
+                                viewModel.markCorrect(card)
                                 advance()
                             },
                         ) {
