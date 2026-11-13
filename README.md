@@ -311,6 +311,30 @@ app/src/main/java/com/clemenssielaff/lingo/
     └── screens/             HomeScreen, PracticeScreen, AddWordScreen
 ```
 
+## Seed-Vokabeln ändern (ohne Datenverlust der Nutzer)
+
+Die Beispiel-Vokabeln liegen in `WordRepository.sampleWords` und tragen
+`isSample = true`. Beim App-Start seedet das Repository nur, wenn die in der
+Tabelle `meta` gespeicherte `seedVersion` kleiner als `WordRepository.SEED_VERSION`
+ist – und löscht dabei nur die `isSample = 1`-Zeilen. Selbst eingegebene Vokabeln
+bleiben erhalten.
+
+Vorgehen bei neuen Seed-Vokabeln:
+
+1. `sampleWords` in `WordRepository.kt` anpassen
+2. `SEED_VERSION` um 1 erhöhen (z. B. `const val SEED_VERSION = 3`)
+3. DB-Version in `AppDatabase` erhöhen (z. B. `version = 3`) und eine Migration
+   registrieren – bei reinem Seed-Wechsel ohne Schema-Änderung genügt eine leere:
+   ```kotlin
+   val MIGRATION_2_3 = object : Migration(2, 3) {
+       override fun migrate(db: SupportSQLiteDatabase) { /* nur Seed-Wechsel */ }
+   }
+   // und .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+   ```
+
+Dann `./scripts/deploy.sh` – bestehende Installationen migrieren und bekommen die
+neuen Beispiel-Vokabeln, eigene Vokabeln bleiben liegen.
+
 ## Nächste Schritte (Ideen)
 
 - Mehrere Stapel (z. B. pro Sprache) und Sprachauswahl

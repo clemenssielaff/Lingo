@@ -3,6 +3,7 @@ package com.clemenssielaff.lingo.data
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
@@ -23,9 +24,6 @@ interface WordDao {
     @Query("SELECT COUNT(*) FROM words")
     fun countWords(): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM words")
-    suspend fun count(): Int
-
     @Insert
     suspend fun insert(word: Word): Long
 
@@ -37,4 +35,13 @@ interface WordDao {
 
     @Delete
     suspend fun delete(word: Word)
+
+    @Query("DELETE FROM words WHERE isSample = 1")
+    suspend fun deleteSampleWords()
+
+    @Query("SELECT value FROM meta WHERE id = :key")
+    suspend fun getMeta(key: String): String?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun setMeta(meta: Meta)
 }

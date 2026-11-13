@@ -12,4 +12,5 @@ data class Word(
     val language: String = "ko",
     val timesCorrect: Int = 0,
     val timesWrong: Int = 0,
+    val isSample: Boolean = false,
 )
