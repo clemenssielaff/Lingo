@@ -124,9 +124,10 @@ Häufige Ursachen und Gegenmaßnahmen (der Reihe nach prüfen):
    ```bash
    LINGO_GPU=1 ./scripts/run-devcontainer.sh
    ```
-   (reicht `/dev/dri` durch + die Gruppen `video`/`render`, deren GIDs das Skript auf
-   dem Host auflöst und numerisch per `--group-add` übergibt – unabhängig von deiner
-   Login-Session. Im Container dann `glxinfo -B` prüfen – sollte die echte GPU melden.)
+   (reicht `/dev/dri` durch; die nötigen Gruppen kommen über `--group-add keep-groups`
+   aus deiner Host-Session – Host-User sollte in `video`/`render` sein, auf Desktop-
+   Systemen Standard, sonst einmalig `sudo usermod -aG video,render $USER`. Im Container
+   dann `glxinfo -B` prüfen – sollte die echte GPU melden, nicht llvmpipe.)
 3. **Wayland/XWayland-Probleme mit KWin** – Test: beim Login eine **X11-Session**
    („Plasma (X11)") wählen und Studio dort laufen lassen. Ansonsten Host updaten
    (`sudo pacman -Syu`) – KWin/XWayland-Hänger mit schweren X11-Clients sind bekannt.
