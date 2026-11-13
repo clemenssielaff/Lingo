@@ -76,8 +76,37 @@ drei Varianten, von empfohlen nach „geht auch":
    reicht `/dev/bus/usb` in den Container durch (Host braucht `android-udev` +
    Gruppe `adbusers`). Klappt meist, ist aber hakelig – nimm Variante 1.
 
-> **Emulator:** Der Android-Emulator braucht `/dev/kvm` – im Container unpraktisch.
-> Nimm stattdessen das echte Galaxy Tab (Variante 1 oder 2).
+### Emulator mit KVM im Container (optional)
+
+Die KVM-Meldung von Android Studio betrifft den **Emulator** (x86_64-AVDs brauchen
+`/dev/kvm`). Für das echte Galaxy Tab brauchst du das nicht – aber so richtest du
+es ein, wenn du doch mal einen Emulator im Container starten willst:
+
+Host (CachyOS), einmalig:
+
+```bash
+sudo pacman -S qemu-full
+sudo modprobe kvm-intel        # Intel-CPU; bei AMD: kvm-amd
+sudo usermod -aG kvm $USER     # danach neu einloggen
+ls -l /dev/kvm                 # muss existieren und Gruppe kvm zeigen
+```
+
+Image mit Emulator-Paketen bauen (größeres Image):
+
+```bash
+podman build -t lingo-dev --build-arg WITH_EMULATOR=1 -f .devcontainer/Dockerfile .devcontainer
+```
+
+Container mit KVM starten:
+
+```bash
+LINGO_KVM=1 ./scripts/run-devcontainer.sh
+```
+
+Das Skript reicht dann `--device /dev/kvm` durch; `--group-add keep-groups` (ist
+bereits gesetzt) sorgt dafür, dass die `kvm`-Gruppe des Host-Users im Container
+ankommt. In Android Studio im AVD Manager ein x86_64-Image anlegen – die
+KVM-Meldung sollte dann nicht mehr kommen bzw. „accelerated" melden.
 
 ## Alternative: native Installation auf CachyOS (Arch-basiert)
 

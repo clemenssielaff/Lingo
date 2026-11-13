@@ -15,6 +15,8 @@ ARG CMDTOOLS_URL=https://dl.google.com/android/repository/commandlinetools-linux
 # Optionaler Build-Arg: exakter Download-Link von https://developer.android.com/studio
 # (Zeile „Linux"). Wenn leer, wird der Link automatisch von der Downloadseite gelesen.
 ARG STUDIO_URL=
+# Optional: Android-Emulator + x86_64-Systemimage ins Image packen (deutlich groesser)
+ARG WITH_EMULATOR=0
 
 # Systempakete: JDK 17, Tools und die X11-/GL-Bibliotheken, die Android Studio
 # für die GUI braucht.
@@ -41,7 +43,10 @@ RUN mkdir -p "$ANDROID_HOME/cmdline-tools" \
 ENV PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$JAVA_HOME/bin:$PATH"
 
 RUN yes | sdkmanager --licenses >/dev/null \
-    && sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+    && sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" \
+    && if [ "$WITH_EMULATOR" = "1" ]; then \
+         sdkmanager "emulator" "system-images;android-34;google_apis;x86_64"; \
+       fi
 
 # Android Studio (tar.gz entpackt nach android-studio/)
 RUN if [ -z "$STUDIO_URL" ]; then \

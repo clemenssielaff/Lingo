@@ -8,6 +8,9 @@
 #   LINGO_USB_PASSTHROUGH  1 = /dev/bus/usb in den Container durchreichen
 #                          (adb direkt per USB; hakelig – empfohlen ist adb
 #                          übers Netzwerk, siehe README)
+#   LINGO_KVM              1 = /dev/kvm durchreichen, damit der Android-Emulator
+#                          im Container mit KVM-Beschleunigung läuft
+#                          (Host: Paket qemu-full, User in Gruppe 'kvm')
 #   LINGO_CMD              Startkommando im Container (Default: bash)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -46,6 +49,10 @@ args=(
 
 if [ "${LINGO_USB_PASSTHROUGH:-0}" = "1" ]; then
   args+=(--device /dev/bus/usb)
+fi
+
+if [ "${LINGO_KVM:-0}" = "1" ]; then
+  args+=(--device /dev/kvm)
 fi
 
 exec podman run "${args[@]}" "${LINGO_CMD:-bash}"
