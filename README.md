@@ -104,6 +104,32 @@ Ursachen für fehlende Icons/Radio-Buttons im Container:
      ```
    - oder die Skalierung in den KDE-Anzeigeeinstellungen vorübergehend auf 100 % stellen.
 
+### Host-Bildschirm friert ein, während Studio im Container läuft
+
+Häufige Ursachen und Gegenmaßnahmen (der Reihe nach prüfen):
+
+1. **RAM/CPU des Hosts überlastet** (Studio + Gradle-Daemon im Container + KDE).
+   Auf dem Host während des Freezes prüfen: `free -h`, `top`, `journalctl -b -p err`
+   (OOM-Killer?) bzw. `dmesg | tail` (GPU-Reset?). Container limitieren:
+   ```bash
+   LINGO_CPUS=4 LINGO_MEMORY=6g ./scripts/run-devcontainer.sh
+   ```
+   Studio-Heap kleiner machen (im Container, persistent dank Volume):
+   ```bash
+   d=$(ls -d ~/.config/Google/AndroidStudio* | head -1)
+   echo "-Xmx2048m" >> "$d/idea.properties"
+   ```
+2. **Software-Rendering (llvmpipe) im Container** – ohne GPU-Zugriff rendert Studio
+   auf der CPU, jeder Frame läuft durch XWayland. GPU durchreichen:
+   ```bash
+   LINGO_GPU=1 ./scripts/run-devcontainer.sh
+   ```
+   (reicht `/dev/dri` durch + Gruppen `video`/`render`; Host-User ist dort normalerweise
+   Mitglied. Im Container dann `glxinfo -B` prüfen – sollte die echte GPU melden.)
+3. **Wayland/XWayland-Probleme mit KWin** – Test: beim Login eine **X11-Session**
+   („Plasma (X11)") wählen und Studio dort laufen lassen. Ansonsten Host updaten
+   (`sudo pacman -Syu`) – KWin/XWayland-Hänger mit schweren X11-Clients sind bekannt.
+
 ### Emulator mit KVM im Container (optional)
 
 Die KVM-Meldung von Android Studio betrifft den **Emulator** (x86_64-AVDs brauchen

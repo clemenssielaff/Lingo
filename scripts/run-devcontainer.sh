@@ -15,6 +15,12 @@
 #                          Host: android-tools + android-udev, 'adb -a start-server'.
 #                          Hostname/IP per LINGO_ADB_HOST überschreibbar
 #                          (Default: host.containers.internal)
+#   LINGO_GPU              1 = /dev/dri in den Container durchreichen, damit
+#                          Android Studio die Host-GPU nutzt statt llvmpipe
+#                          (Software-Rendering frisst CPU und kann den Host
+#                          einfrieren lassen)
+#   LINGO_CPUS / LINGO_MEMORY  optionale Ressourcen-Limits für den Container,
+#                          z. B. LINGO_CPUS=4 LINGO_MEMORY=6g
 #   LINGO_CMD              Startkommando im Container (Default: bash)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -61,6 +67,17 @@ fi
 
 if [ "${LINGO_USE_HOST_ADB:-0}" = "1" ]; then
   args+=(-e "ADB_SERVER_SOCKET=tcp:${LINGO_ADB_HOST:-host.containers.internal}:5037")
+fi
+
+if [ "${LINGO_GPU:-0}" = "1" ]; then
+  args+=(--device /dev/dri --group-add video --group-add render)
+fi
+
+if [ -n "${LINGO_CPUS:-}" ]; then
+  args+=(--cpus "$LINGO_CPUS")
+fi
+if [ -n "${LINGO_MEMORY:-}" ]; then
+  args+=(--memory "$LINGO_MEMORY")
 fi
 
 exec podman run "${args[@]}" "${LINGO_CMD:-bash}"
