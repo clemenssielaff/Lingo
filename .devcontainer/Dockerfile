@@ -57,13 +57,13 @@ RUN if [ -z "$STUDIO_URL" ]; then \
 
 ENV PATH="/opt/android-studio/bin:$PATH"
 
-# Eigenen Benutzer statt root (Android Studio motzt sonst herum)
-RUN useradd -m -u 1000 -s /bin/bash dev \
-    && mkdir -p /workspace \
-    && chown -R dev:dev /workspace /opt/android-sdk
+# Vorhandenen Nicht-root-User "ubuntu" (UID 1000 im Basisimage) nutzen –
+# Android Studio motzt sonst herum, und UID 1000 passt zu --userns=keep-id
+RUN mkdir -p /workspace \
+    && chown -R ubuntu:ubuntu /workspace /opt/android-sdk
 
-USER dev
-ENV HOME=/home/dev
+USER ubuntu
+ENV HOME=/home/ubuntu
 WORKDIR /workspace
 
 # Im Container: `studio` startet Android Studio, `./gradlew installDebug` baut & installiert.

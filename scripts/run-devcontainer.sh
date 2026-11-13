@@ -34,11 +34,11 @@ args=(
   -v /tmp/.X11-unix:/tmp/.X11-unix:ro
   -v "$PWD:/workspace"
   -w /workspace
-  -v lingo-gradle-cache:/home/dev/.gradle
-  -v lingo-studio-config:/home/dev/.config/Google
-  -v lingo-studio-share:/home/dev/.local/share/Google
-  -v lingo-android-home:/home/dev/.android
-  -v lingo-jetbrains-cache:/home/dev/.cache/JetBrains
+  -v lingo-gradle-cache:/home/ubuntu/.gradle
+  -v lingo-studio-config:/home/ubuntu/.config/Google
+  -v lingo-studio-share:/home/ubuntu/.local/share/Google
+  -v lingo-android-home:/home/ubuntu/.android
+  -v lingo-jetbrains-cache:/home/ubuntu/.cache/JetBrains
   --userns=keep-id
   --group-add keep-groups
   "$IMAGE"
