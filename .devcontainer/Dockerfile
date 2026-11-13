@@ -77,6 +77,8 @@ RUN mkdir -p /workspace \
 USER ubuntu
 ENV HOME=/home/ubuntu
 ENV XDG_RUNTIME_DIR=/tmp/runtime-ubuntu
+# ADB_SERVER_SOCKET wird absichtlich nicht hartkodiert; bei Bedarf setzt
+# scripts/run-devcontainer.sh (LINGO_USE_HOST_ADB=1) die Variable als -e.
 WORKDIR /workspace
 
 # Im Container: `studio` startet Android Studio, `./gradlew installDebug` baut & installiert.

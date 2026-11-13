@@ -10,7 +10,11 @@
 #                          übers Netzwerk, siehe README)
 #   LINGO_KVM              1 = /dev/kvm durchreichen, damit der Android-Emulator
 #                          im Container mit KVM-Beschleunigung läuft
-#                          (Host: Paket qemu-full, User in Gruppe 'kvm')
+#   LINGO_USE_HOST_ADB     1 = adb im Container über den adb-Server des Hosts
+#                          laufen lassen (setzt ADB_SERVER_SOCKET als -e).
+#                          Host: android-tools + android-udev, 'adb -a start-server'.
+#                          Hostname/IP per LINGO_ADB_HOST überschreibbar
+#                          (Default: host.containers.internal)
 #   LINGO_CMD              Startkommando im Container (Default: bash)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -53,6 +57,10 @@ fi
 
 if [ "${LINGO_KVM:-0}" = "1" ]; then
   args+=(--device /dev/kvm)
+fi
+
+if [ "${LINGO_USE_HOST_ADB:-0}" = "1" ]; then
+  args+=(-e "ADB_SERVER_SOCKET=tcp:${LINGO_ADB_HOST:-host.containers.internal}:5037")
 fi
 
 exec podman run "${args[@]}" "${LINGO_CMD:-bash}"

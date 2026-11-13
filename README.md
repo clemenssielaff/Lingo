@@ -68,12 +68,18 @@ drei Varianten, von empfohlen nach „geht auch":
    Der Container erreicht das Tablet direkt übers LAN. Android Studio zeigt das
    Gerät danach ganz normal im Device Manager an – „Run" und `installDebug`
    funktionieren, als säße das Tablet lokal am Rechner.
-2. **adb-Server auf dem Host:** Auf dem CachyOS-Host (Paket `android-tools`,
-   Tablet per USB) `adb -a start-server` ausführen. Im Container:
+2. **adb-Server auf dem Host (empfohlen bei USB, ohne Container-Neustart):**
+   Auf dem CachyOS-Host `android-tools` + `android-udev` installieren, User in
+   Gruppe `adbusers` aufnehmen, Tablet per USB verbinden und `adb -a start-server`
+   ausführen. Container dann mit Flag starten – das Skript setzt
+   `ADB_SERVER_SOCKET=tcp:host.containers.internal:5037` im Container:
    ```bash
-   export ADB_SERVER_SOCKET=tcp:host.containers.internal:5037
-   adb devices   # Container-adb spricht mit dem Host-adb-Server, der das USB-Gerät verwaltet
+   LINGO_USE_HOST_ADB=1 ./scripts/run-devcontainer.sh
+   # im Container: adb devices  -> Tab sichtbar; ./gradlew installDebug funktioniert
    ```
+   Falls `host.containers.internal` nicht auflöst, Gateway-IP übergeben:
+   `LINGO_ADB_HOST=10.0.2.2 LINGO_USE_HOST_ADB=1 ./scripts/run-devcontainer.sh`
+   (Gateway siehe `ip route | awk '/default/ {print $3}'` im Container).
 3. **USB-Passthrough:** `LINGO_USB_PASSTHROUGH=1 ./scripts/run-devcontainer.sh`
    reicht `/dev/bus/usb` in den Container durch (Host braucht `android-udev` +
    Gruppe `adbusers`). Klappt meist, ist aber hakelig – nimm Variante 1.
