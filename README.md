@@ -86,6 +86,27 @@ drei Varianten, von empfohlen nach „geht auch":
    reicht `/dev/bus/usb` in den Container durch (Host braucht `android-udev` +
    Gruppe `adbusers`). Klappt meist, ist aber hakelig – nimm Variante 1.
 
+### App auf das Tablet deployen (zuverlässige Variante)
+
+`./gradlew installDebug` **im Container** ist mit Remote-ADB-Server unzuverlässig
+(AGP-DeviceMonitor verliert die Verbindung: „Cannot reach ADB server"). Deshalb:
+
+```bash
+# auf dem Host, vom Repo-Root:
+./scripts/deploy.sh
+```
+
+Das Skript baut die APK im laufenden Container (`podman exec … ./gradlew assembleDebug`)
+und installiert sie per `adb install -r` auf dem Host (USB-Gerät hängt am Host).
+`-r` installiert neu, ohne die App-Daten zu löschen. Der APK-Pfad ist derselbe
+(Projekt-Mount), also von beiden Seiten erreichbar.
+
+Manuell äquivalent:
+```bash
+podman exec lingo-dev ./gradlew assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
 ### Fehlende/unichtbare Icons und Buttons (XWayland, Wayland, HiDPI)
 
 X11-Forwarding über XWayland funktioniert grundsätzlich sauber – zwei typische
