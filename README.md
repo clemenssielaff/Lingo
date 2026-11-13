@@ -15,7 +15,8 @@ Karteikarten-Modus („Gewusst" / „Nochmal üben").
 Damit auf dem CachyOS-Host nichts installiert werden muss, liegt in
 `.devcontainer/` eine fertige **Dockerfile** (funktioniert unverändert mit Podman
 und Docker). Sie enthält Android Studio, das Android SDK (`platform-tools` inkl.
-`adb`, `platforms;android-34`, `build-tools;34.0.0`) und ein **JDK 21** – das wird
+`adb`, `platforms;android-34` + `platforms;android-35`, `build-tools;34.0.0` +
+`build-tools;35.0.0`) und ein **JDK 21** – das wird
 über `org.gradle.java.home` in `gradle.properties` als Gradle-JVM erzwungen, damit
 Gradle 8.10.2 nicht auf dem JBR 25 der IDE laufen muss.
 
@@ -208,7 +209,7 @@ Danach neu einloggen (oder `source ~/.bashrc`) und folgendes ausführen:
 
 ```bash
 sdkmanager --licenses
-sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+sdkmanager "platform-tools" "platforms;android-34" "platforms;android-35" "build-tools;34.0.0" "build-tools;35.0.0"
 ```
 
 ### 3. Galaxy Tab vorbereiten

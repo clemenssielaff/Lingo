@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.clemenssielaff.lingo"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.clemenssielaff.lingo"

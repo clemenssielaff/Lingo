@@ -45,7 +45,8 @@ RUN mkdir -p "$ANDROID_HOME/cmdline-tools" \
 ENV PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$JAVA_HOME/bin:$PATH"
 
 RUN yes | sdkmanager --licenses >/dev/null \
-    && sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" \
+    && sdkmanager "platform-tools" "platforms;android-34" "platforms;android-35" \
+       "build-tools;34.0.0" "build-tools;35.0.0" \
     && if [ "$WITH_EMULATOR" = "1" ]; then \
          sdkmanager "emulator" "system-images;android-34;google_apis;x86_64"; \
        fi
