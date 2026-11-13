@@ -18,11 +18,11 @@ ARG STUDIO_URL=
 # Optional: Android-Emulator + x86_64-Systemimage ins Image packen (deutlich groesser)
 ARG WITH_EMULATOR=0
 
-# Systempakete: JDK 17, Tools und die X11-/GL-Bibliotheken, die Android Studio
-# für die GUI braucht.
+# Systempakete: JDK 21 (als Gradle-JVM; die IDE selbst nutzt ihr gebündeltes
+# JBR), Tools und die X11-/GL-Bibliotheken, die Android Studio für die GUI braucht.
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl wget unzip git openssh-client \
-      openjdk-17-jdk \
+      openjdk-21-jdk \
       fontconfig fonts-dejavu-core fonts-noto-core \
       libx11-6 libxext6 libxrender1 libxtst6 libxi6 libxrandr2 libxinerama1 \
       libxcursor1 libxfixes3 libxkbcommon0 libgl1 libegl1 libgles2 \
@@ -31,7 +31,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && fc-cache -f \
     && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 ENV ANDROID_HOME=/opt/android-sdk
 ENV ANDROID_SDK_ROOT=/opt/android-sdk
 

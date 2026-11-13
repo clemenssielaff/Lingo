@@ -15,7 +15,9 @@ Karteikarten-Modus („Gewusst" / „Nochmal üben").
 Damit auf dem CachyOS-Host nichts installiert werden muss, liegt in
 `.devcontainer/` eine fertige **Dockerfile** (funktioniert unverändert mit Podman
 und Docker). Sie enthält Android Studio, das Android SDK (`platform-tools` inkl.
-`adb`, `platforms;android-34`, `build-tools;34.0.0`) und ein JDK 17.
+`adb`, `platforms;android-34`, `build-tools;34.0.0`) und ein **JDK 21** – das wird
+über `org.gradle.java.home` in `gradle.properties` als Gradle-JVM erzwungen, damit
+Gradle 8.10.2 nicht auf dem JBR 25 der IDE laufen muss.
 
 ### Host-Voraussetzungen (einmalig, minimal)
 
@@ -133,10 +135,13 @@ KVM-Meldung sollte dann nicht mehr kommen bzw. „accelerated" melden.
 ### 1. Pakete installieren
 
 ```bash
-sudo pacman -S jdk17-openjdk android-tools android-udev
+sudo pacman -S jdk21-openjdk android-tools android-udev
 ```
 
-- `jdk17-openjdk` – JDK 17 (Pflicht für den Android-Build)
+- `jdk21-openjdk` – JDK 21. Achtung: `org.gradle.java.home` in `gradle.properties`
+  zeigt auf den Container-Pfad (`/usr/lib/jvm/java-21-openjdk-amd64`). Beim nativen
+  Bauen auf dem Host dort `/usr/lib/jvm/java-21-openjdk` eintragen oder die Zeile
+  auskommentieren (dann greift `JAVA_HOME`).
 - `android-tools` – enthält `adb` (die Brücke zum Tablet)
 - `android-udev` – udev-Regeln, damit `adb` ohne Root auf Samsung-Geräte zugreifen darf
 
