@@ -58,12 +58,18 @@ RUN if [ -z "$STUDIO_URL" ]; then \
 ENV PATH="/opt/android-studio/bin:$PATH"
 
 # Vorhandenen Nicht-root-User "ubuntu" (UID 1000 im Basisimage) nutzen –
-# Android Studio motzt sonst herum, und UID 1000 passt zu --userns=keep-id
+# Android Studio motzt sonst herum, und UID 1000 passt zu --userns=keep-id.
+# Home-Unterverzeichnisse vorab anlegen und ubuntu übereignen, sonst legt
+# Podman sie beim Mounten der Named Volumes root-gehörig an (AccessDenied).
 RUN mkdir -p /workspace \
-    && chown -R ubuntu:ubuntu /workspace /opt/android-sdk
+    && mkdir -p /home/ubuntu/.gradle /home/ubuntu/.cache /home/ubuntu/.config/Google \
+       /home/ubuntu/.local/share/Google /home/ubuntu/.android /tmp/runtime-ubuntu \
+    && chown -R ubuntu:ubuntu /workspace /opt/android-sdk /home/ubuntu /tmp/runtime-ubuntu \
+    && chmod 700 /tmp/runtime-ubuntu
 
 USER ubuntu
 ENV HOME=/home/ubuntu
+ENV XDG_RUNTIME_DIR=/tmp/runtime-ubuntu
 WORKDIR /workspace
 
 # Im Container: `studio` startet Android Studio, `./gradlew installDebug` baut & installiert.
