@@ -53,7 +53,6 @@ args=(
   -v lingo-android-home:/home/ubuntu/.android
   -v lingo-jetbrains-cache:/home/ubuntu/.cache/JetBrains
   --userns=keep-id
-  --group-add keep-groups
 )
 # WICHTIG: Alle Optionen müssen VOR dem Image-Namen stehen – alles danach wäre
 # das Container-Kommando.
@@ -71,7 +70,20 @@ if [ "${LINGO_USE_HOST_ADB:-0}" = "1" ]; then
 fi
 
 if [ "${LINGO_GPU:-0}" = "1" ]; then
-  args+=(--device /dev/dri --group-add video --group-add render)
+  args+=(--device /dev/dri)
+fi
+
+# Gruppen: '--group-add keep-groups' ist nicht mit anderen --group-add kombinierbar.
+# Ohne GPU -> keep-groups (nimmt alle Host-Gruppen mit, z. B. adbusers).
+# Mit GPU -> explizit video/render (Host-User ist das auf Desktop-Systemen eh);
+# bei gleichzeitigem USB-Passthrough zusätzlich adbusers.
+if [ "${LINGO_GPU:-0}" = "1" ]; then
+  args+=(--group-add video --group-add render)
+  if [ "${LINGO_USB_PASSTHROUGH:-0}" = "1" ]; then
+    args+=(--group-add adbusers)
+  fi
+else
+  args+=(--group-add keep-groups)
 fi
 
 if [ -n "${LINGO_CPUS:-}" ]; then
