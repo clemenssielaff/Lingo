@@ -48,8 +48,9 @@ studio                  # Android Studio starten (erster Start: Setup-Wizard dur
 ./gradlew installDebug  # baut die App und installiert sie auf dem verbundenen Gerät
 ```
 
-> Hinweis: `scripts/ensure-gradle-wrapper.sh` lädt einmalig die `gradle-wrapper.jar`
-> passend zur gepinnten Gradle-Version nach (wird von `run-devcontainer.sh` automatisch aufgerufen).
+> Hinweis: `scripts/ensure-gradle-wrapper.sh` lädt einmalig `gradlew`, `gradlew.bat`
+> und die `gradle-wrapper.jar` passend zur gepinnten Gradle-Version nach (wird von
+> `run-devcontainer.sh` automatisch aufgerufen).
 
 ### Tablet-Verbindung: funktioniert USB im Container?
 
@@ -241,7 +242,8 @@ cd Lingo
 ```
 
 **Gradle Wrapper erzeugen (einmalig):** Das Repo enthält die
-`gradle-wrapper.properties`, aber noch nicht die `gradle-wrapper.jar`.
+`gradle-wrapper.properties`; `gradlew` und `gradle-wrapper.jar` lädt
+`scripts/ensure-gradle-wrapper.sh` nach.
 Einmaligig erzeugen – entweder über das System-Gradle:
 
 ```bash

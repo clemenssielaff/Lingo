@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Lädt die gradle-wrapper.jar zur in gradle/wrapper/gradle-wrapper.properties
-# gepinnten Gradle-Version nach (einmalig, braucht Netzwerk).
+# Lädt gradlew, gradlew.bat und die gradle-wrapper.jar passend zur in
+# gradle/wrapper/gradle-wrapper.properties gepinnten Gradle-Version nach
+# (einmalig, braucht Netzwerk).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -10,8 +11,12 @@ if [ -z "$GRADLE_VERSION" ]; then
   exit 1
 fi
 
-if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
-  echo "Lade gradle-wrapper.jar für Gradle $GRADLE_VERSION ..."
-  curl -fsSL -o gradle/wrapper/gradle-wrapper.jar \
-    "https://raw.githubusercontent.com/gradle/gradle/v${GRADLE_VERSION}/gradle/wrapper/gradle-wrapper.jar"
-fi
+BASE_URL="https://raw.githubusercontent.com/gradle/gradle/v${GRADLE_VERSION}"
+for f in gradlew gradlew.bat gradle/wrapper/gradle-wrapper.jar; do
+  if [ ! -f "$f" ]; then
+    echo "Lade $f (Gradle $GRADLE_VERSION) ..."
+    mkdir -p "$(dirname "$f")"
+    curl -fsSL -o "$f" "$BASE_URL/$f"
+  fi
+done
+chmod +x gradlew
