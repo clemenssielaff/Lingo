@@ -1,6 +1,5 @@
 package com.clemenssielaff.lingo.ui
 
-import androidx.lifecycle.CreationExtras
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -35,10 +34,8 @@ class LingoViewModel(private val repository: WordRepository) : ViewModel() {
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                val application =
-                    extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as LingoApplication
-                return LingoViewModel(application.repository) as T
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return LingoViewModel(LingoApplication.instance.repository) as T
             }
         }
     }
